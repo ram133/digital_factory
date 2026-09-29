@@ -20,16 +20,17 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install fastapi uvicorn requests google-genai moviepy
+          pip install fastapi uvicorn requests google-genai moviepy beautifulsoup4
 
-      - name: Generate 3 Daily Assets
+      - name: Generate 3 Daily Assets & Outreach Drafts
         run: |
           python3 update_generators.py
+          python3 marketing_agent.py
 
-      - name: Commit and Push Daily Report
+      - name: Commit and Push Daily Outputs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add daily_report.json
-          git commit -m "Automated daily generation: 3 assets created [skip ci]" || echo "No changes"
+          git add daily_report.json campaign_outreach.json
+          git commit -m "Automated daily generation: 3 assets & marketing outreach draft [skip ci]" || echo "No changes"
           git push
