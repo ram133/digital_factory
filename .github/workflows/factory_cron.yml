@@ -1,9 +1,14 @@
-name: Digital Factory Daily Cloud Runner
+name: Digital Factory Autonomous Engine
 
 on:
   schedule:
     - cron: '0 21 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   run-factory:
@@ -22,15 +27,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install fastapi uvicorn requests google-genai moviepy beautifulsoup4 streamlit
 
-      - name: Build Daily Deliverable Products & Links
+      - name: Execute Autonomous Pipeline
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           python3 pipeline_upgrade.py
+          python3 scraper.py
           python3 marketing_agent.py
 
-      - name: Commit and Push Daily Deliverables
+      - name: Commit and Push Assets & Reports
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add daily_report.json campaign_outreach.json products/
-          git commit -m "Automated production: generated 3 monetized products & catalog [skip ci]" || echo "No changes"
+          git add index.html daily_report.json campaign_outreach.json scraped_leads.json products/
+          git commit -m "Automated execution: deployable PWA assets, scraper leads & outreach [skip ci]" || echo "No changes"
           git push
