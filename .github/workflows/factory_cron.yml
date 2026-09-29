@@ -2,7 +2,7 @@ name: Digital Factory Daily Cloud Runner
 
 on:
   schedule:
-    - cron: '0 21 * * *'  # Runs daily in GitHub Cloud (7:00 AM ChST)
+    - cron: '0 21 * * *'
   workflow_dispatch:
 
 jobs:
@@ -22,6 +22,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install fastapi uvicorn requests google-genai moviepy
 
-      - name: Execute Factory Task
+      - name: Generate 3 Daily Assets
         run: |
-          python3 -c "print('Cloud Digital Factory execution complete.')"
+          python3 update_generators.py
+
+      - name: Commit and Push Daily Report
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add daily_report.json
+          git commit -m "Automated daily generation: 3 assets created [skip ci]" || echo "No changes"
+          git push

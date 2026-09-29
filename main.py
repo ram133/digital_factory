@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-import uvicorn
+import json
+import os
 
 app = FastAPI(title="Digital Factory API")
 
@@ -7,10 +8,9 @@ app = FastAPI(title="Digital Factory API")
 def read_root():
     return {"status": "active", "factory": "Digital Factory Core"}
 
-@app.get("/generate")
-def generate_asset():
-    # Placeholder for automated media/content generation logic
-    return {"result": "success", "asset_id": "item_001"}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+@app.get("/daily-summary")
+def get_daily_summary():
+    if os.path.exists("daily_report.json"):
+        with open("daily_report.json") as f:
+            return json.load(f)
+    return {"status": "No daily report found yet."}
