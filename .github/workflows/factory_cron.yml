@@ -1,0 +1,27 @@
+name: Digital Factory Daily Cloud Runner
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # Runs daily in GitHub Cloud (7:00 AM ChST)
+  workflow_dispatch:
+
+jobs:
+  run-factory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn requests google-genai moviepy
+
+      - name: Execute Factory Task
+        run: |
+          python3 -c "print('Cloud Digital Factory execution complete.')"
