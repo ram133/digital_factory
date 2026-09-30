@@ -1,28 +1,24 @@
 {
-  "timestamp": "2026-09-30T09:31:51.230176",
-  "status": "ready_for_sale",
-  "merchant_paypal": "crh2509@icloud.com",
+  "timestamp": "2026-09-30T10:04:02.666457",
+  "merchant": "crh2509@icloud.com",
   "products": [
     {
-      "title": "Modular PWA Core Suite",
-      "description": "Production-ready single-file Progressive Web Application boilerplate with offline caching and mobile manifest.",
+      "title": "PWA Tool: Task Automation Engine",
       "price": "$19.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Modular%20PWA%20Core%20Suite&amount=19.00&currency_code=USD",
-      "file": "products/pwa_core.html"
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Task%20Automation%20Engine&amount=19.00&currency_code=USD",
+      "file": "products/asset_1_20260930.html"
     },
     {
-      "title": "Guam Business Directory Matrix",
-      "description": "Structured directory and interactive map template designed for Guam tourism and local service providers.",
-      "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Business%20Directory%20Matrix&amount=29.00&currency_code=USD",
-      "file": "products/guam_matrix.html"
-    },
-    {
-      "title": "Qwen 3.8 Local AI Orchestrator",
-      "description": "Automated shell and Python execution suite for local LLM orchestration and continuous task processing.",
+      "title": "Guam Resource: Audio Binaural Generator",
       "price": "$15.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Qwen%203.8%20Local%20AI%20Orchestrator&amount=15.00&currency_code=USD",
-      "file": "products/qwen_workflow.html"
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Audio%20Binaural%20Generator&amount=15.00&currency_code=USD",
+      "file": "products/asset_2_20260930.html"
+    },
+    {
+      "title": "AI Workflow: SaaS Payment Interface",
+      "price": "$29.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20SaaS%20Payment%20Interface&amount=29.00&currency_code=USD",
+      "file": "products/asset_3_20260930.html"
     }
   ]
 }
