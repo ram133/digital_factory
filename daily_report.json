@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-10-03T00:18:05.687186",
+  "timestamp": "2026-10-03T23:38:05.621827",
   "merchant": "crh2509@icloud.com",
   "products": [
     {
-      "title": "PWA Tool: Quantum Mind Map",
+      "title": "PWA Tool: Audio Binaural Generator",
       "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Quantum%20Mind%20Map&amount=29.00&currency_code=USD",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Audio%20Binaural%20Generator&amount=29.00&currency_code=USD",
       "file": "products/asset_1_20261003.html"
     },
     {
-      "title": "Guam Resource: Local Service Directory",
-      "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Local%20Service%20Directory&amount=29.00&currency_code=USD",
+      "title": "Guam Resource: SaaS Payment Interface",
+      "price": "$39.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20SaaS%20Payment%20Interface&amount=39.00&currency_code=USD",
       "file": "products/asset_2_20261003.html"
     },
     {
-      "title": "AI Workflow: SaaS Payment Interface",
-      "price": "$19.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20SaaS%20Payment%20Interface&amount=19.00&currency_code=USD",
+      "title": "AI Workflow: Quantum Mind Map",
+      "price": "$15.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20Quantum%20Mind%20Map&amount=15.00&currency_code=USD",
       "file": "products/asset_3_20261003.html"
     }
   ]
