@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-10-06T01:42:24.689346",
+  "timestamp": "2026-10-07T00:30:25.582823",
   "merchant": "crh2509@icloud.com",
   "products": [
     {
-      "title": "PWA Tool: Local Service Directory",
-      "price": "$19.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Local%20Service%20Directory&amount=19.00&currency_code=USD",
-      "file": "products/asset_1_20261006.html"
-    },
-    {
-      "title": "Guam Resource: Audio Binaural Generator",
-      "price": "$19.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Audio%20Binaural%20Generator&amount=19.00&currency_code=USD",
-      "file": "products/asset_2_20261006.html"
-    },
-    {
-      "title": "AI Workflow: SaaS Payment Interface",
+      "title": "PWA Tool: Audio Binaural Generator",
       "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20SaaS%20Payment%20Interface&amount=29.00&currency_code=USD",
-      "file": "products/asset_3_20261006.html"
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Audio%20Binaural%20Generator&amount=29.00&currency_code=USD",
+      "file": "products/asset_1_20261007.html"
+    },
+    {
+      "title": "Guam Resource: Local Service Directory",
+      "price": "$39.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Local%20Service%20Directory&amount=39.00&currency_code=USD",
+      "file": "products/asset_2_20261007.html"
+    },
+    {
+      "title": "AI Workflow: Quantum Mind Map",
+      "price": "$39.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20Quantum%20Mind%20Map&amount=39.00&currency_code=USD",
+      "file": "products/asset_3_20261007.html"
     }
   ]
 }
