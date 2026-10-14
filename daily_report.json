@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-10-14T00:12:46.848859",
+  "timestamp": "2026-10-14T23:47:49.167486",
   "merchant": "crh2509@icloud.com",
   "products": [
     {
       "title": "PWA Tool: Local Service Directory",
-      "price": "$15.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Local%20Service%20Directory&amount=15.00&currency_code=USD",
+      "price": "$19.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Local%20Service%20Directory&amount=19.00&currency_code=USD",
       "file": "products/asset_1_20261014.html"
     },
     {
@@ -16,8 +16,8 @@
     },
     {
       "title": "AI Workflow: Audio Binaural Generator",
-      "price": "$19.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20Audio%20Binaural%20Generator&amount=19.00&currency_code=USD",
+      "price": "$39.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20Audio%20Binaural%20Generator&amount=39.00&currency_code=USD",
       "file": "products/asset_3_20261014.html"
     }
   ]
