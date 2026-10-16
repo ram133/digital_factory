@@ -1,7 +1,9 @@
+import os
 import subprocess, json, datetime
 
 def run_sync():
     print("Starting Digital Factory Master Sync...")
+    os.system("python3 social_factory.py")
     result = subprocess.run(["/opt/homebrew/bin/gh", "repo", "list", "ram133", "--limit", "100", "--json", "name,url,updatedAt,isPrivate"], capture_output=True, text=True)
     if result.returncode == 0:
         repos = json.loads(result.stdout)
