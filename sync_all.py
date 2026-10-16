@@ -30,7 +30,23 @@ def run_sync():
 </html>"""
         with open("index.html", "w") as f:
             f.write(html)
-        print("Master sync completed successfully.")
+        
+        # Auto-generate Ecosystem README cross-links
+        readme = "# Digital Factory Master Hub & Ecosystem\n\n"
+        readme += f"Managing **{total}** public open-source repositories and digital assets by RAM133.\n\n"
+        readme += "## 🚀 Featured Assets & Monetization\n"
+        readme += "- **[Digital Factory Dashboard](https://ram133.github.io/digital_factory/)**: Live inventory, sitemap, and project catalog.\n"
+        readme += "- **Support Open Source**: [Support via PayPal](https://www.paypal.com/ncp/payment/YOUR_PAYPAL_ID)\n\n"
+        readme += "## 📦 Repository Index\n"
+        for repo in repos:
+            name = repo.get("name")
+            url = repo.get("html_url")
+            desc = repo.get("description") or "Open source digital asset and utility."
+            readme += f"- **[{name}]({url})**: {desc}\n"
+        with open("README.md", "w") as f:
+            f.write(readme)
+
+        print("Master sync and ecosystem README generation completed successfully.")
     else:
         print("Sync failed:", result.stderr)
 
