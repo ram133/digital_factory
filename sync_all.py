@@ -2,7 +2,7 @@ import subprocess, json, datetime
 
 def run_sync():
     print("Starting Digital Factory Master Sync...")
-    result = subprocess.run(["gh", "repo", "list", "ram133", "--limit", "100", "--json", "name,url,updatedAt,isPrivate"], capture_output=True, text=True)
+    result = subprocess.run(["/opt/homebrew/bin/gh", "repo", "list", "ram133", "--limit", "100", "--json", "name,url,updatedAt,isPrivate"], capture_output=True, text=True)
     if result.returncode == 0:
         repos = json.loads(result.stdout)
         total = len(repos)
