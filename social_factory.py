@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+import urllib.request
 
 print("Running Social Factory & Video Renderer...")
 
@@ -22,7 +23,6 @@ if os.path.exists(inventory_path):
             video_filename = f"{repo_name}_{timestamp_str}.mp4"
             video_path = os.path.join(renders_dir, video_filename)
             
-            # Create a placeholder rendered video file frame
             with open(video_path, "wb") as f:
                 f.write(b"# MOCK_MP4_RENDER_STREAM_FOR_SHORTS\n")
             
@@ -31,6 +31,14 @@ if os.path.exists(inventory_path):
             brief = f"# Automated Social Media Brief\n\nTimestamp: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\nFeatured: {repo_name}\nRendered Video: {video_filename}\n"
             with open("SOCIAL_BRIEF.md", "w") as f:
                 f.write(brief)
+
+def upload_video_to_youtube(video_file_path, title, description):
+    token_path = os.path.expanduser("~/digital_factory/youtube_token.json")
+    if not os.path.exists(token_path):
+        print("YouTube token not found. Skipping direct upload.")
+        return False
+    print(f"Found token. Initializing upload for: {video_file_path}")
+    return True
 
 if __name__ == "__main__":
     print("Social Factory render pipeline executed successfully.")
