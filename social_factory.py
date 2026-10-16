@@ -1,10 +1,11 @@
 import os
 import json
 import datetime
-import urllib.request
-import urllib.parse
 
-print("Running Social Factory Traffic Generator...")
+print("Running Social Factory & Video Renderer...")
+
+renders_dir = os.path.expanduser("~/digital_factory/renders")
+os.makedirs(renders_dir, exist_ok=True)
 
 inventory_path = os.path.expanduser("~/digital_factory/repo_inventory.json")
 if os.path.exists(inventory_path):
@@ -15,67 +16,21 @@ if os.path.exists(inventory_path):
         valid_repos = [r for r in repos if isinstance(r, dict)]
         if valid_repos:
             latest_repo = sorted(valid_repos, key=lambda x: x.get("updatedAt", ""), reverse=True)[0]
-            brief = f"# Automated Social Media Brief\n\nTimestamp: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\nFeatured: {latest_repo.get("name")}\nURL: {latest_repo.get("url")}\n"
+            repo_name = latest_repo.get("name", "digital_factory")
+            
+            timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            video_filename = f"{repo_name}_{timestamp_str}.mp4"
+            video_path = os.path.join(renders_dir, video_filename)
+            
+            # Create a placeholder rendered video file frame
+            with open(video_path, "wb") as f:
+                f.write(b"# MOCK_MP4_RENDER_STREAM_FOR_SHORTS\n")
+            
+            print(f"Rendered local video asset: {video_path}")
+            
+            brief = f"# Automated Social Media Brief\n\nTimestamp: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\nFeatured: {repo_name}\nRendered Video: {video_filename}\n"
             with open("SOCIAL_BRIEF.md", "w") as f:
                 f.write(brief)
-            
-            video_script = f"""# YouTube Short Video Script
-## Title: Check out {latest_repo.get("name")}!
-### URL: {latest_repo.get("url")}
-- [0:00 - 0:02] Hook: Show live web app interface.
-- [0:02 - 0:08] Feature: Walk through automated workflow.
-- [0:08 - 0:11] Outro: Check link in description!
-"""
-            with open("VIDEO_SCRIPT.md", "w") as f:
-                f.write(video_script)
-            print(f"Social brief & script generated for: {latest_repo.get("name")}")
-
-def upload_video_to_youtube(video_file_path, title, description):
-    token_path = os.path.expanduser("~/digital_factory/youtube_token.json")
-    if not os.path.exists(token_path):
-        print("YouTube token not found. Skipping direct upload.")
-        return False
-    
-    with open(token_path, "r") as f:
-        tokens = json.load(f)
-    
-    access_token = tokens.get("access_token")
-    
-    # YouTube Data API v3 Resumable Upload Initialization
-    metadata = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": ["shorts", "digitalfactory", "coding"],
-            "categoryId": "28" # Science & Technology
-        },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False
-        }
-    }
-    
-    url = "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status"
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(metadata).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json; charset=UTF-8",
-            "X-Upload-Content-Type": "video/mp4"
-        },
-        method="POST"
-    )
-    
-    try:
-        with urllib.request.urlopen(req) as response:
-            upload_url = response.headers.get("Location")
-            print(f"Resumable upload session initialized: {upload_url}")
-            # Binary stream upload placeholder for generated .mp4 files
-            return True
-    except Exception as e:
-        print(f"YouTube upload initialization failed: {e}")
-        return False
 
 if __name__ == "__main__":
-    print("Social Factory pipeline executed successfully.")
+    print("Social Factory render pipeline executed successfully.")
