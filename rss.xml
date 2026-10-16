@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Digital Factory Ecosystem Feed</title>
+    <link>https://ram133.github.io/digital_factory/</link>
+    <description>Latest open-source repositories, micro-SaaS utilities, and updates from RAM133.</description>
+    <lastBuildDate>Fri, 16 Oct 2026 10:38:33 +0000</lastBuildDate>
+    <atom:link href="https://ram133.github.io/digital_factory/rss.xml" rel="self" type="application/rss+xml"/>
+  </channel>
+</rss>
