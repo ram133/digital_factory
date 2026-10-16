@@ -1,11 +1,11 @@
 {
-  "sync_time": "2026-10-16T00:03:51.297135+00:00",
-  "total_repos": 72,
+  "sync_time": "2026-10-16T00:09:53.110125+00:00",
+  "total_repos": 71,
   "repositories": [
     {
       "isPrivate": false,
       "name": "digital_factory",
-      "updatedAt": "2026-10-16T00:02:57Z",
+      "updatedAt": "2026-10-16T00:08:30Z",
       "url": "https://github.com/ram133/digital_factory"
     },
     {
@@ -199,12 +199,6 @@
       "name": "qwen-code-action",
       "updatedAt": "2026-09-18T23:22:36Z",
       "url": "https://github.com/ram133/qwen-code-action"
-    },
-    {
-      "isPrivate": true,
-      "name": "cross-post-automation",
-      "updatedAt": "2026-07-12T11:39:12Z",
-      "url": "https://github.com/ram133/cross-post-automation"
     },
     {
       "isPrivate": false,
