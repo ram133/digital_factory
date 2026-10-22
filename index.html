@@ -1,1 +1,293 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'; import { Vote, Wallet, PlusCircle, Clock, CheckCircle2, XCircle, AlertCircle, Sparkles, BarChart3, Search, Filter, ExternalLink, ShieldCheck, TrendingUp, RefreshCw, Layers, Lock, Users, Award, ChevronRight, LogOut, Copy, Info } from 'lucide-react'; // --- INITIAL MOCK DATA FOR DEMO MODE --- const INITIAL_POLLS = [ { id: 'poll-1', title: 'SIP-12: Implement Automated Liquidity Staking Pools', description: 'Should the protocol redirect 15% of protocol revenue towards auto-compounding liquidity incentives on Arbitrum and Mainnet?', category: 'Governance', creator: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F', createdAt: Date.now() - 3600000 * 24 * 2, deadline: Date.now() + 3600000 * 48, // 48 hours left minTokenBalance: '100 POLL', totalVotes: 1420, options: [ { id: 'opt-1', text: 'Yes, execute immediately', votes: 980 }, { id: 'opt-2', text: 'No, delay until Q3 review', votes: 310 }, { id: 'opt-3', text: 'Abstain', votes: 130 } ], voters: { '0x382...91a': { optionId: 'opt-1', power: 50, txHash: '0xa41...89b' }, '0x901...42c': { optionId: 'opt-2', power: 120, txHash: '0x8f2...1e3' } } }, { id: 'poll-2', title: 'Community Grant Funding: Round #4 Allocation', description: 'Select the primary ecosystem project to receive the 25,000 USDC Builder Ecosystem Grant for this quarter.', category: 'Crypto', creator: '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc', createdAt: Date.now() - 3600000 * 12, deadline: Date.now() + 3600000 * 120, // 5 days left minTokenBalance: 'None', totalVotes: 890, options: [ { id: 'opt-1', text: 'ZK-Privacy Shield Toolkit', votes: 450 }, { id: 'opt-2', text: 'DeFi Risk Analytics Dashboard', votes: 320 }, { id: 'opt-3', text: 'Cross-chain NFT Bridge', votes: 120 } ], voters: {} }, { id: 'poll-3', title: 'Official Mascot Design for DAO Community Fest 2026', description: 'Vote on your favorite community-designed mascot that will be minted as an exclusive soulbound attendee badge.', category: 'Fun', creator: '0xF39Fd6e51aad88F6F4ce6aB8827279cffFb92266', createdAt: Date.now() - 3600000 * 72, deadline: Date.now() - 3600000 * 2, // Ended 2 hours ago minTokenBalance: '1 POLL', totalVotes: 2310, options: [ { id: 'opt-1', text: 'Cybernetic Shiba', votes: 1420 }, { id: 'opt-2', text: 'Pixelated Eth Dragon', votes: 650 }, { id: 'opt-3', text: 'Quantum Pepe', votes: 240 } ], voters: {} } ]; export default function App() { // --- STATE MANAGEMENT --- const [wallet, setWallet] = useState({ isConnected: false, address: null, chainId: null, networkName: 'Disconnected', balance: '0.00', isDemo: false }); const [polls, setPolls] = useState(() => { const saved = localStorage.getItem('web3_poll_app_data'); return saved ? JSON.parse(saved) : INITIAL_POLLS; }); const [selectedCategory, setSelectedCategory] = useState('All'); const [selectedStatus, setSelectedStatus] = useState('All'); const [searchQuery, setSearchQuery] = useState(''); const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'create' const [activeAnalyticsPoll, setActiveAnalyticsPoll] = useState(null); // User voting choices (pollId -> optionId) const [userVotes, setUserVotes] = useState({}); // Toast Notifications const [toasts, setToasts] = useState([]); // Form State for New Poll Creation const [newPoll, setNewPoll] = useState({ title: '', description: '', category: 'Governance', durationHours: 48, minTokenBalance: '0', options: ['', ''] }); const [isSubmitting, setIsSubmitting] = useState(false); // Save polls to LocalStorage whenever state changes useEffect(() => { localStorage.setItem('web3_poll_app_data', JSON.stringify(polls)); }, [polls]); // Toast Helper const addToast = useCallback((type, title, message) => { const id = Date.now() + Math.random(); setToasts((prev) => [...prev, { id, type, title, message }]); setTimeout(() => { setToasts((prev) => prev.filter((t) => t.id !== id)); }, 5000); }, []); // --- ETHERS / WEB3 INTEGRATION --- const handleConnectWallet = async (preferDemo = false) => { if (preferDemo) { setWallet({ isConnected: true, address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F', chainId: '0xaa36a7', networkName: 'Sepolia (Demo)', balance: '12.45', isDemo: true }); addToast('success', 'Demo Mode Activated', 'Connected to simulated Web3 environment.'); return; } if (typeof window.ethereum !== 'undefined') { try { const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }); const chainId = await window.ethereum.request({ method: 'eth_chainId' }); let network = 'Unknown Net'; if (chainId === '0x1') network = 'Ethereum Mainnet'; else if (chainId === '0xaa36a7') network = 'Sepolia Testnet'; else if (chainId === '0x89') network = 'Polygon Mainnet'; else if (chainId === '0x13881') network = 'Polygon Mumbai'; // Get balance mock / request let balanceEth = '1.28'; try { const rawBal = await window.ethereum.request({ method: 'eth_getBalance', params: [accounts[0], 'latest'] }); balanceEth = (parseInt(rawBal, 16) / 1e18).toFixed(4); } catch (e) { console.warn('Balance fetch error', e); } setWallet({ isConnected: true, address: accounts[0], chainId, networkName: network, balance: balanceEth, isDemo: false }); addToast('success', 'Wallet Connected', `Connected to ${network}`); } catch (err) { console.error(err); addToast('error', 'Connection Failed', err.message || 'User rejected request.'); } } else { addToast('info', 'No Web3 Wallet Found', 'Switching to Web3 Simulated Demo Mode.'); handleConnectWallet(true); } }; const handleDisconnectWallet = () => { setWallet({ isConnected: false, address: null, chainId: null, networkName: 'Disconnected', balance: '0.00', isDemo: false }); addToast('info', 'Wallet Disconnected', 'Returned to view-only mode.'); }; // Listen for account / chain changes useEffect(() => { if (typeof window.ethereum !== 'undefined') { const handleAccountsChanged = (accounts) => { if (accounts.length === 0) { handleDisconnectWallet(); } else if (wallet.isConnected && !wallet.isDemo) { setWallet((prev) => ({ ...prev, address: accounts[0] })); addToast('info', 'Account Switched', `Active address: ${accounts[0].substring(0, 6)}...`); } }; const handleChainChanged = () => { window.location.reload(); }; window.ethereum.on('accountsChanged', handleAccountsChanged); window.ethereum.on('chainChanged', handleChainChanged); return () => { if (window.ethereum.removeListener) { window.ethereum.removeListener('accountsChanged', handleAccountsChanged); window.ethereum.removeListener('chainChanged', handleChainChanged); } }; } }, [wallet.isConnected, wallet.isDemo, addToast]); // --- ACTIONS: CREATE POLL --- const handleAddOption = () => { if (newPoll.options.length < 6) { setNewPoll({ ...newPoll, options: [...newPoll.options, ''] }); } }; const handleOptionChange = (index, value) => { const updated = [...newPoll.options]; updated[index] = value; setNewPoll({ ...newPoll, options: updated }); }; const handleRemoveOption = (index) => { if (newPoll.options.length > 2) { const updated = newPoll.options.filter((_, i) => i !== index); setNewPoll({ ...newPoll, options: updated }); } }; const handleCreatePollSubmit = async (e) => { e.preventDefault(); if (!wallet.isConnected) { addToast('error', 'Wallet Not Connected', 'Please connect your Web3 wallet or activate Demo Mode.'); return; } const validOptions = newPoll.options.filter((opt) => opt.trim() !== ''); if (validOptions.length < 2) { addToast('error', 'Validation Error', 'Provide at least 2 valid options.'); return; } setIsSubmitting(true); addToast('info', 'Broadcasting Transaction', 'Prompting Web3 contract deployment...'); // Simulate smart contract interaction delay setTimeout(() => { const createdPoll = { id: `poll-${Date.now()}`, title: newPoll.title, description: newPoll.description, category: newPoll.category, creator: wallet.address, createdAt: Date.now(), deadline: Date.now() + newPoll.durationHours * 3600000, minTokenBalance: newPoll.minTokenBalance > 0 ? `${newPoll.minTokenBalance} POLL` : 'None', totalVotes: 0, options: validOptions.map((text, idx) => ({ id: `opt-${idx + 1}`, text, votes: 0 })), voters: {} }; setPolls([createdPoll, ...polls]); setIsSubmitting(false); setActiveTab('feed'); setNewPoll({ title: '', description: '', category: 'Governance', durationHours: 48, minTokenBalance: '0', options: ['', ''] }); addToast('success', 'Poll Published!', 'Your poll has been successfully deployed to the ledger.'); }, 1800); }; // --- ACTIONS: CAST VOTE --- const handleCastVote = async (pollId) => { const selectedOptId = userVotes[pollId]; if (!selectedOptId) { addToast('error', 'Selection Required', 'Please select an option before voting.'); return; } if (!wallet.isConnected) { addToast('error', 'Wallet Required', 'Connect wallet to cast an on-chain vote.'); return; } const poll = polls.find((p) => p.id === pollId); if (!poll) return; if (Date.now() > poll.deadline) { addToast('error', 'Poll Closed', 'This voting proposal has expired.'); return; } // Check if user already voted const existingVote = poll.voters[wallet.address]; if (existingVote) { addToast('error', 'Already Voted', 'Your wallet address has already registered a vote on this poll.'); return; } addToast('info', 'Signing Transaction', 'Waiting for Web3 signature confirmation...'); // Simulate blockchain gas execution setTimeout(() => { const fakeTxHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''); const updatedPolls = polls.map((p) => { if (p.id === pollId) { const updatedOptions = p.options.map((opt) => { if (opt.id === selectedOptId) { return { ...opt, votes: opt.votes + 1 }; } return opt; }); return { ...p, totalVotes: p.totalVotes + 1, options: updatedOptions, voters: { ...p.voters, [wallet.address]: { optionId: selectedOptId, power: 1, txHash: fakeTxHash, timestamp: Date.now() } } }; } return p; }); setPolls(updatedPolls); addToast('success', 'Vote Recorded!', `Tx Hash: ${fakeTxHash.substring(0, 10)}...`); }, 1500); }; // --- FILTERED POLLS --- const filteredPolls = useMemo(() => { return polls.filter((poll) => { const isExpired = Date.now() > poll.deadline; const isUpcoming = poll.createdAt > Date.now(); // future state // Category Filter if (selectedCategory !== 'All' && poll.category !== selectedCategory) { return false; } // Status Filter if (selectedStatus === 'Active' && isExpired) return false; if (selectedStatus === 'Ended' && !isExpired) return false; // Search Query if (searchQuery.trim()) { const query = searchQuery.toLowerCase(); const matchesTitle = poll.title.toLowerCase().includes(query); const matchesDesc = poll.description.toLowerCase().includes(query); return matchesTitle || matchesDesc; } return true; }); }, [polls, selectedCategory, selectedStatus, searchQuery]); return ( <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white flex flex-col"> {/* --- TOAST NOTIFICATION CONTAINER --- */} <div className="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"> {toasts.map((t) => ( <div key={t.id} className={`pointer-events-auto p-4 rounded-xl border backdrop-blur-md shadow-2xl flex items-start gap-3 transition-all duration-300 animate-in slide-in-from-top-5 ${ t.type === 'success' ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-200' : t.type === 'error' ? 'bg-rose-950/80 border-rose-500/40 text-rose-200' : 'bg-indigo-950/80 border-indigo-500/40 text-indigo-200' }`} > {t.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />} {t.type === 'error' && <XCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />} {t.type === 'info' && <AlertCircle className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />} <div className="flex-1 text-sm"> <h4 className="font-semibold">{t.title}</h4> <p className="text-xs opacity-90 mt-0.5 leading-relaxed">{t.message}</p> </div> </div> ))} </div> {/* --- HEADER / NAVIGATION BAR --- */} <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl"> <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between"> {/* Logo */} <div className="flex items-center gap-3"> <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 p-0.5 shadow-lg shadow-indigo-500/20"> <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center"> <Vote className="w-5 h-5 text-indigo-400" /> </div> </div> <div> <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"> POLL<span className="text-indigo-500">.dapp</span> </span> <span className="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full"> v2.4 Governance </span> </div> </div> {/* Navigation Controls */} <div className="flex items-center gap-3 sm:gap-4"> <nav className="hidden md:flex items-center gap-1 bg-slate-900/80 border border-slate-800 p-1 rounded-xl"> <button onClick={() => setActiveTab('feed')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${ activeTab === 'feed' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }`} > <Layers className="w-4 h-4" /> Active Polls </button> <button onClick={() => setActiveTab('create')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${ activeTab === 'create' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800/50' }`} > <PlusCircle className="w-4 h-4" /> Create Proposal </button> </nav> {/* Wallet Button / Badges */} {wallet.isConnected ? ( <div className="flex items-center gap-2"> <div className="hidden sm:flex flex-col items-end px-3 py-1 bg-slate-900 border border-slate-800 rounded-xl"> <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400"> <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> {wallet.networkName} </div> <div className="text-[11px] text-slate-400 font-mono"> {wallet.balance} ETH </div> </div> <div className="relative group"> <button className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 px-3.5 py-2 rounded-xl text-sm font-mono text-slate-200 transition-all"> <Wallet className="w-4 h-4 text-indigo-400" /> <span>{`${wallet.address.substring(0, 6)}...${wallet.address.substring(wallet.address.length - 4)}`}</span> </button> <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto p-1.5 z-50"> <button onClick={handleDisconnectWallet} className="w-full flex items-center gap-2 text-rose-400 hover:bg-rose-950/40 px-3 py-2 rounded-lg text-xs font-medium transition-all" > <LogOut className="w-3.5 h-3.5" /> Disconnect Wallet </button> </div> </div> </div> ) : ( <div className="flex items-center gap-2"> <button onClick={() => handleConnectWallet(false)} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2" > <Wallet className="w-4 h-4" /> Connect Wallet </button> <button onClick={() => handleConnectWallet(true)} className="hidden sm:flex bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60 font-medium text-xs px-3 py-2.5 rounded-xl transition-all items-center gap-1.5" title="Test DApp features without browser extension" > <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Demo Mode </button> </div> )} </div> </div> </header> {/* MOBILE TAB BAR */} <div className="md:hidden border-b border-slate-800 bg-slate-900/50 p-2 flex gap-2"> <button onClick={() => setActiveTab('feed')} className={`flex-1 py-2 rounded-lg text-xs font-medium text-center flex items-center justify-center gap-1.5 ${ activeTab === 'feed' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-slate-900' }`} > <Layers className="w-3.5 h-3.5" /> Polls </button> <button onClick={() => setActiveTab('create')} className={`flex-1 py-2 rounded-lg text-xs font-medium text-center flex items-center justify-center gap-1.5 ${ activeTab === 'create' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-slate-900' }`} > <PlusCircle className="w-3.5 h-3.5" /> Create </button> </div> {/* MAIN CONTAINER */} <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"> {/* VIEW 1: POLL FEED */} {activeTab === 'feed' && ( <div className="space-y-8"> {/* HERO HERO STATS / BANNER */} <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 sm:p-8"> <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" /> <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6"> <div> <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight"> On-Chain Governance & Public Polling </h1> <p className="text-slate-400 text-sm mt-2 max-w-xl leading-relaxed"> Cast verifiable web3 votes, propose DAO parameters, and audit transparent smart contract analytics in real time. </p> </div> <div className="grid grid-cols-3 gap-3 sm:gap-4 shrink-0"> <div className="bg-slate-950/60 border border-slate-800 p-3.5 rounded-2xl text-center"> <span className="block text-xs text-slate-500 font-medium">Active Polls</span> <span className="text-lg sm:text-xl font-bold text-white mt-0.5 block"> {polls.filter((p) => Date.now() < p.deadline).length} </span> </div> <div className="bg-slate-950/60 border border-slate-800 p-3.5 rounded-2xl text-center"> <span className="block text-xs text-slate-500 font-medium">Total Votes</span> <span className="text-lg sm:text-xl font-bold text-indigo-400 mt-0.5 block"> {polls.reduce((acc, p) => acc + p.totalVotes, 0)} </span> </div> <div className="bg-slate-950/60 border border-slate-800 p-3.5 rounded-2xl text-center"> <span className="block text-xs text-slate-500 font-medium">Voter Security</span> <span className="text-lg sm:text-xl font-bold text-emerald-400 mt-0.5 block flex items-center justify-center gap-1"> <ShieldCheck className="w-4 h-4 inline" /> 100% </span> </div> </div> </div> </div> {/* SEARCH AND FILTER BAR */} <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between"> {/* Search */} <div className="relative flex-1 max-w-md"> <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" /> <input type="text" placeholder="Search proposals, creators, or topics..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all" /> </div> {/* Filters */} <div className="flex flex-wrap items-center gap-2"> {/* Category Pills */} <div className="flex items-center bg-slate-900 border border-slate-800 p-1 rounded-xl text-xs font-medium"> {['All', 'Governance', 'Crypto', 'Community', 'Fun'].map((cat) => ( <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-3 py-1.5 rounded-lg transition-all ${ selectedCategory === cat ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white' }`} > {cat} </button> ))} </div> {/* Status Selector */} <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-indigo-500" > <option value="All">Status: All</option> <option value="Active">Status: Active</option> <option value="Ended">Status: Ended</option> </select> </div> </div> {/* POLL CARDS GRID */} {filteredPolls.length === 0 ? ( <div className="text-center py-16 bg-slate-900/30 border border-dashed border-slate-800 rounded-3xl"> <Filter className="w-10 h-10 text-slate-600 mx-auto mb-3" /> <h3 className="text-base font-semibold text-slate-300">No proposals found</h3> <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto"> Try clearing your search query or changing category filters. </p> </div> ) : ( <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {filteredPolls.map((poll) => { const isExpired = Date.now() > poll.deadline; const hasVoted = wallet.address && poll.voters && poll.voters[wallet.address]; const selectedOpt = userVotes[poll.id]; // Time remaining calculation const timeLeftMs = Math.max(0, poll.deadline - Date.now()); const hoursLeft = Math.floor(timeLeftMs / (1000 * 60 * 60)); const daysLeft = Math.floor(hoursLeft / 24); return ( <div key={poll.id} className="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-all duration-200 hover:shadow-xl hover:shadow-indigo-950/10" > <div> {/* Card Header Tag & Timer */} <div className="flex items-center justify-between gap-2 mb-3"> <span className="text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md bg-slate-800 text-indigo-400 border border-slate-700/50"> {poll.category} </span> <span className={`text-xs font-mono flex items-center gap-1 ${ isExpired ? 'text-slate-500' : 'text-amber-400' }`} > <Clock className="w-3.5 h-3.5" /> {isExpired ? 'Ended' : daysLeft > 0 ? `${daysLeft}d ${hoursLeft % 24}h left` : `${hoursLeft}h left`} </span> </div> {/* Title & Description */} <h3 className="font-bold text-lg text-slate-100 line-clamp-2 leading-snug"> {poll.title} </h3> <p className="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed"> {poll.description} </p> {/* Options / Progress Bars */} <div className="mt-5 space-y-2.5"> {poll.options.map((opt) => { const pct = poll.totalVotes > 0 ? Math.round((opt.votes / poll.totalVotes) * 100) : 0; const isSelected = selectedOpt === opt.id; const userVotedThis = hasVoted && poll.voters[wallet.address]?.optionId === opt.id; return ( <div key={opt.id} onClick={() => { if (!isExpired && !hasVoted) { setUserVotes({ ...userVotes, [poll.id]: opt.id }); } }} className={`relative overflow-hidden rounded-xl border p-3 cursor-pointer transition-all ${ userVotedThis ? 'border-indigo-500 bg-indigo-950/30' : isSelected ? 'border-indigo-400 bg-slate-800/80' : 'border-slate-800 bg-slate-950/50 hover:border-slate-700' }`} > {/* Fill Progress Bar */} <div className="absolute top-0 left-0 bottom-0 bg-indigo-600/15 transition-all duration-500" style={{ width: `${pct}%` }} /> <div className="relative z-10 flex items-center justify-between text-xs"> <div className="flex items-center gap-2 max-w-[75%]"> {!isExpired && !hasVoted && ( <input type="radio" name={`poll-${poll.id}`} checked={isSelected} onChange={() => {}} className="accent-indigo-500 cursor-pointer" /> )} <span className="font-medium text-slate-200 truncate"> {opt.text} </span> {userVotedThis && ( <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30 font-mono"> Your Vote </span> )} </div> <span className="font-mono font-semibold text-slate-300"> {pct}% </span> </div> </div> ); })} </div> </div> {/* Card Footer */} <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between"> <div className="text-xs text-slate-500 flex items-center gap-3"> <span className="flex items-center gap-1 font-mono"> <Users className="w-3.5 h-3.5 text-slate-400" /> {poll.totalVotes} </span> <span className="flex items-center gap-1 text-[11px]"> <Lock className="w-3 h-3 text-slate-400" /> {poll.minTokenBalance} </span> </div> <div className="flex items-center gap-2"> <button onClick={() => setActiveAnalyticsPoll(poll)} className="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 rounded-lg transition-all" title="View Analytics & Voter History" > <BarChart3 className="w-4 h-4" /> </button> {!isExpired && !hasVoted && ( <button onClick={() => handleCastVote(poll.id)} className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-3.5 py-2 rounded-lg transition-all shadow-md shadow-indigo-600/20" > Vote </button> )} {hasVoted && ( <span className="text-xs text-emerald-400 font-medium flex items-center gap-1 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1 rounded-lg"> <CheckCircle2 className="w-3.5 h-3.5" /> Voted </span> )} </div> </div> </div> ); })} </div> )} </div> )} {/* VIEW 2: CREATE POLL FORM */} {activeTab === 'create' && ( <div className="max-w-2xl mx-auto"> <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl"> <div className="flex items-center gap-3 border-b border-slate-800 pb-5"> <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400"> <PlusCircle className="w-5 h-5" /> </div> <div> <h2 className="text-xl font-bold text-white">Create On-Chain Poll</h2> <p className="text-xs text-slate-400 mt-0.5"> Deploy a new voting proposal accessible to Web3 wallet holders. </p> </div> </div> <form onSubmit={handleCreatePollSubmit} className="mt-6 space-y-5"> {/* Proposal Title */} <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Proposal Title * </label> <input type="text" required placeholder="e.g. SIP-24: Add SOL/USDC Pool to Treasury" value={newPoll.title} onChange={(e) => setNewPoll({ ...newPoll, title: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition-all" /> </div> {/* Description */} <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Detailed Specification / Summary * </label> <textarea required rows={4} placeholder="Provide context, rationale, and technical background for voters..." value={newPoll.description} onChange={(e) => setNewPoll({ ...newPoll, description: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl p-4 text-sm text-slate-100 placeholder-slate-600 outline-none transition-all resize-none" /> </div> {/* Category & Duration Row */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Category </label> <select value={newPoll.category} onChange={(e) => setNewPoll({ ...newPoll, category: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-100 outline-none transition-all" > <option value="Governance">Governance</option> <option value="Crypto">Crypto Ecosystem</option> <option value="Community">Community Grant</option> <option value="Fun">Fun / Casual</option> </select> </div> <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Poll Duration </label> <select value={newPoll.durationHours} onChange={(e) => setNewPoll({ ...newPoll, durationHours: parseInt(e.target.value) }) } className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-100 outline-none transition-all" > <option value={24}>24 Hours</option> <option value={48}>48 Hours (2 Days)</option> <option value={120}>5 Days</option> <option value={168}>7 Days</option> </select> </div> </div> {/* Minimum Token Gate Requirement */} <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Min POLL Token Balance Requirement (Optional) </label> <input type="number" min="0" placeholder="0 (No gating restriction)" value={newPoll.minTokenBalance} onChange={(e) => setNewPoll({ ...newPoll, minTokenBalance: e.target.value })} className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-600 outline-none transition-all" /> </div> {/* Options Section */} <div> <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2"> Voting Options (2 - 6 options) </label> <div className="space-y-3"> {newPoll.options.map((opt, idx) => ( <div key={idx} className="flex items-center gap-2"> <input type="text" required placeholder={`Option #${idx + 1}`} value={opt} onChange={(e) => handleOptionChange(idx, e.target.value)} className="flex-1 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-all" /> {newPoll.options.length > 2 && ( <button type="button" onClick={() => handleRemoveOption(idx)} className="p-2 text-slate-500 hover:text-rose-400 transition-colors" > <XCircle className="w-5 h-5" /> </button> )} </div> ))} </div> {newPoll.options.length < 6 && ( <button type="button" onClick={handleAddOption} className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition-all" > <PlusCircle className="w-4 h-4" /> Add Option </button> )} </div> {/* Submit Button */} <div className="pt-4"> <button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50" > {isSubmitting ? ( <> <RefreshCw className="w-4 h-4 animate-spin" /> Deploying Smart Contract... </> ) : ( <> <Sparkles className="w-4 h-4" /> Publish Web3 Proposal </> )} </button> </div> </form> </div> </div> )} {/* VIEW 3: DETAILED ANALYTICS MODAL */} {activeAnalyticsPoll && ( <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200"> <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative"> <button onClick={() => setActiveAnalyticsPoll(null)} className="absolute top-6 right-6 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/50" > <XCircle className="w-5 h-5" /> </button> <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider"> <BarChart3 className="w-4 h-4" /> Poll Governance Ledger Analytics </div> <h2 className="text-xl font-bold text-white mt-1"> {activeAnalyticsPoll.title} </h2> {/* Stats Bar */} <div className="grid grid-cols-3 gap-3 my-6"> <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl"> <span className="text-[11px] text-slate-500 block">Total Votes</span> <span className="text-lg font-bold text-white font-mono"> {activeAnalyticsPoll.totalVotes} </span> </div> <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl"> <span className="text-[11px] text-slate-500 block">Category</span> <span className="text-sm font-semibold text-indigo-400 mt-1 block"> {activeAnalyticsPoll.category} </span> </div> <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl"> <span className="text-[11px] text-slate-500 block">Token Requirements</span> <span className="text-sm font-mono text-slate-300 mt-1 block"> {activeAnalyticsPoll.minTokenBalance} </span> </div> </div> {/* Vote Breakdown */} <div className="space-y-4"> <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400"> Real-Time Results Breakdown </h4> {activeAnalyticsPoll.options.map((opt) => { const pct = activeAnalyticsPoll.totalVotes > 0 ? Math.round((opt.votes / activeAnalyticsPoll.totalVotes) * 100) : 0; return ( <div key={opt.id} className="bg-slate-950 border border-slate-800 p-3.5 rounded-xl"> <div className="flex justify-between text-xs font-medium mb-1.5"> <span className="text-slate-200">{opt.text}</span> <span className="font-mono text-indigo-400"> {opt.votes} votes ({pct}%) </span> </div> <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden"> <div className="bg-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} /> </div> </div> ); })} </div> {/* Recent Voter Transactions */} <div className="mt-8"> <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between"> <span>Recent On-Chain Activity Log</span> <ShieldCheck className="w-4 h-4 text-emerald-400" /> </h4> <div className="space-y-2 max-h-48 overflow-y-auto pr-1"> {Object.keys(activeAnalyticsPoll.voters).length === 0 ? ( <div className="text-center py-6 text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl"> No votes recorded on-chain yet for this proposal. </div> ) : ( Object.entries(activeAnalyticsPoll.voters).map(([address, data]) => { const optName = activeAnalyticsPoll.options.find((o) => o.id === data.optionId)?.text || 'Option'; return ( <div key={address} className="bg-slate-950/80 border border-slate-800/80 p-3 rounded-xl flex items-center justify-between text-xs font-mono" > <div> <span className="text-slate-300 font-semibold">{address}</span> <span className="text-slate-500 text-[10px] block mt-0.5"> Voted: <span className="text-indigo-400">{optName}</span> </span> </div> <a href={`https://sepolia.etherscan.io/tx/${data.txHash}`} target="_blank" rel="noreferrer" className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 text-[11px] bg-indigo-950/50 border border-indigo-500/20 px-2 py-1 rounded-md" > <span>Tx Hash</span> <ExternalLink className="w-3 h-3" /> </a> </div> ); }) )} </div> </div> </div> </div> )} </main> {/* FOOTER */} <footer className="border-t border-slate-900 bg-slate-950 py-6"> <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4"> <div className="flex items-center gap-2"> <Vote className="w-4 h-4 text-indigo-500" /> <span>POLL Web3 Voting Infrastructure &copy; 2026</span> </div> <div className="flex items-center gap-4 text-slate-400"> <span className="flex items-center gap-1"> <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> EVM Compatible </span> <span>Ethers.js v5</span> <span>MetaMask / Coinbase Ready</span> </div> </div> </footer> </div> ); }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poll dAPP - Decentralized Voting Portal</title>
+  <style>
+    :root {
+      --bg-base: #07090e;
+      --bg-surface: #12151e;
+      --bg-card: #181c28;
+      --border-color: #262d3d;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.2);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-stack);
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+      font-size: 16px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .wallet-btn {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px var(--accent-glow);
+      transition: opacity 0.2s;
+    }
+
+    .wallet-btn:hover {
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .poll-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    }
+
+    .poll-header {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .poll-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .option-container {
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+
+    .option-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .option-box:hover {
+      border-color: var(--accent);
+    }
+
+    .option-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(59, 130, 246, 0.12);
+      z-index: 1;
+      transition: width 0.4s ease;
+    }
+
+    .option-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .option-percentage {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .vote-action-btn {
+      width: 100%;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .vote-action-btn:hover {
+      border-color: var(--accent);
+      background-color: var(--accent-glow);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      background-color: var(--bg-surface);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">P</div>
+      <div>
+        <div class="brand-title">Poll dAPP</div>
+        <div class="brand-subtitle">Decentralized Voting</div>
+      </div>
+    </div>
+    <button id="connectWalletBtn" class="wallet-btn" onclick="connectWallet()">Connect Wallet</button>
+  </header>
+
+  <main class="container">
+    <div class="poll-card">
+      <div class="poll-header">SIP-12: Implement Automated Liquidity Staking Pools</div>
+      <div class="poll-meta">
+        <span>Category: Governance</span>
+        <span id="pollStatus">Status: Active</span>
+      </div>
+
+      <div class="option-container" onclick="castVote(0)">
+        <div class="option-box">
+          <div class="option-progress" id="progress-0" style="width: 70%;"></div>
+          <div class="option-content">
+            <span>Yes, execute immediately</span>
+            <span class="option-percentage" id="pct-0">70%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="option-container" onclick="castVote(1)">
+        <div class="option-box">
+          <div class="option-progress" id="progress-1" style="width: 20%;"></div>
+          <div class="option-content">
+            <span>No, delay until Q3 review</span>
+            <span class="option-percentage" id="pct-1">20%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="option-container" onclick="castVote(2)">
+        <div class="option-box">
+          <div class="option-progress" id="progress-2" style="width: 10%;"></div>
+          <div class="option-content">
+            <span>Abstain</span>
+            <span class="option-percentage" id="pct-2">10%</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="vote-action-btn" onclick="castVote(0)">Cast On-Chain Vote</button>
+    </div>
+  </main>
+
+  <footer>
+    Poll dAPP &copy; 2026 - Edge Accelerated Web3 Infrastructure
+  </footer>
+
+  <script>
+    let userAddress = null;
+    let voteCounts = [70, 20, 10];
+
+    async function connectWallet() {
+      const btn = document.getElementById('connectWalletBtn');
+      if (typeof window.ethereum !== 'undefined') {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          userAddress = accounts[0];
+          btn.innerText = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
+        } catch (err) {
+          alert('Wallet connection rejected.');
+        }
+      } else {
+        userAddress = '0x71C7...8976F';
+        btn.innerText = '0x71C7...8976F (Demo)';
+        alert('No Web3 wallet extension found. Activated Demo Mode!');
+      }
+    }
+
+    function castVote(index) {
+      if (!userAddress) {
+        alert('Please connect your wallet first!');
+        return;
+      }
+      voteCounts[index] += 1;
+      const total = voteCounts.reduce((a, b) => a + b, 0);
+
+      voteCounts.forEach((count, i) => {
+        const pct = Math.round((count / total) * 100);
+        document.getElementById(`progress-${i}`).style.width = pct + '%';
+        document.getElementById(`pct-${i}`).innerText = pct + '%';
+      });
+
+      alert('Vote recorded successfully!');
+    }
+  </script>
+</body>
+</html>
