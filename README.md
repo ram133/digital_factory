@@ -1,81 +1,9 @@
-# Digital Factory Master Hub & Ecosystem
+# Digital Factory
 
-Managing **72** public open-source repositories and digital assets by RAM133.
+**Ship digital products on repeat.**
 
-## 🚀 Featured Assets & Monetization
-- **[Digital Factory Dashboard](https://ram133.github.io/digital_factory/)**: Live inventory, sitemap, and project catalog.
-- **Support Open Source**: [Support via PayPal](https://www.paypal.com/ncp/payment/YOUR_PAYPAL_ID)
+System for creating, packaging, selling and delivering digital products.
 
-## 📦 Repository Index
-- **[digital_factory](None)**: Open source digital asset and utility.
-- **[guamcoin](None)**: Open source digital asset and utility.
-- **[open-webui-cloud](None)**: Open source digital asset and utility.
-- **[mcu_quantum_project](None)**: Open source digital asset and utility.
-- **[ram133](None)**: Open source digital asset and utility.
-- **[fastgpt-cloud](None)**: Open source digital asset and utility.
-- **[nocodb-cloud](None)**: Open source digital asset and utility.
-- **[DOCOMO](None)**: Open source digital asset and utility.
-- **[bot3](None)**: Open source digital asset and utility.
-- **[gyd](None)**: Open source digital asset and utility.
-- **[AI](None)**: Open source digital asset and utility.
-- **[micro-saas-kit](None)**: Open source digital asset and utility.
-- **[api-vault](None)**: Open source digital asset and utility.
-- **[audio-presets](None)**: Open source digital asset and utility.
-- **[design-assets](None)**: Open source digital asset and utility.
-- **[code-boilerplates](None)**: Open source digital asset and utility.
-- **[prompt-pack](None)**: Open source digital asset and utility.
-- **[template-store](None)**: Open source digital asset and utility.
-- **[niche-directory](None)**: Open source digital asset and utility.
-- **[asset-store](None)**: Open source digital asset and utility.
-- **[eliza](None)**: Open source digital asset and utility.
-- **[gas-microsaas](None)**: Open source digital asset and utility.
-- **[browser-use](None)**: Open source digital asset and utility.
-- **[nanoGPT](None)**: Open source digital asset and utility.
-- **[XActions](None)**: Open source digital asset and utility.
-- **[Scweet](None)**: Open source digital asset and utility.
-- **[ollama](None)**: Open source digital asset and utility.
-- **[oh-my-cli](None)**: Open source digital asset and utility.
-- **[Qwen3.8](None)**: Open source digital asset and utility.
-- **[ADA](None)**: Open source digital asset and utility.
-- **[rayswallet](None)**: Open source digital asset and utility.
-- **[x-tweet-scraper](None)**: Open source digital asset and utility.
-- **[qwen-code-action](None)**: Open source digital asset and utility.
-- **[cross-post-automation](None)**: Open source digital asset and utility.
-- **[MAX](None)**: Open source digital asset and utility.
-- **[langchain](None)**: Open source digital asset and utility.
-- **[AutoGPT](None)**: Open source digital asset and utility.
-- **[max-git-system](None)**: Open source digital asset and utility.
-- **[picoclaw](None)**: Open source digital asset and utility.
-- **[.github](None)**: Open source digital asset and utility.
-- **[apps-script-samples](None)**: Open source digital asset and utility.
-- **[openclaw](None)**: Open source digital asset and utility.
-- **[cli](None)**: Open source digital asset and utility.
-- **[twikit](None)**: Open source digital asset and utility.
-- **[Qwen](None)**: Open source digital asset and utility.
-- **[femtoclaw](None)**: Open source digital asset and utility.
-- **[stable-diffusion-webui](None)**: Open source digital asset and utility.
-- **[web-llm-chat](None)**: Open source digital asset and utility.
-- **[site-assets](None)**: Open source digital asset and utility.
-- **[2509](None)**: Open source digital asset and utility.
-- **[ChatGPT](None)**: Open source digital asset and utility.
-- **[Gemini](None)**: Open source digital asset and utility.
-- **[site-core](None)**: Open source digital asset and utility.
-- **[site-utils](None)**: Open source digital asset and utility.
-- **[site-api](None)**: Open source digital asset and utility.
-- **[site-ui](None)**: Open source digital asset and utility.
-- **[everything-claude-code](None)**: Open source digital asset and utility.
-- **[supabase](None)**: Open source digital asset and utility.
-- **[coin5](None)**: Open source digital asset and utility.
-- **[coin4](None)**: Open source digital asset and utility.
-- **[coin3](None)**: Open source digital asset and utility.
-- **[coin2](None)**: Open source digital asset and utility.
-- **[coin](None)**: Open source digital asset and utility.
-- **[raycoin](None)**: Open source digital asset and utility.
-- **[bot2](None)**: Open source digital asset and utility.
-- **[5](None)**: Open source digital asset and utility.
-- **[vuemmerce](None)**: Open source digital asset and utility.
-- **[jsonframe-cheerio](None)**: Open source digital asset and utility.
-- **[simple-ipn](None)**: Open source digital asset and utility.
-- **[How-to-Make-a-Computer-Operating-System](None)**: Open source digital asset and utility.
-- **[PHP-Download-Counter](None)**: Open source digital asset and utility.
-- **[jFeed](None)**: Open source digital asset and utility.
+Live: https://ram133.github.io/digital_factory/
+
+Built with Grok.
