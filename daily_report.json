@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-11-04T01:08:19.772017",
+  "timestamp": "2026-11-05T01:23:44.309227",
   "merchant": "crh2509@icloud.com",
   "products": [
     {
-      "title": "PWA Tool: Quantum Mind Map",
-      "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Quantum%20Mind%20Map&amount=29.00&currency_code=USD",
-      "file": "products/asset_1_20261104.html"
+      "title": "PWA Tool: Local Service Directory",
+      "price": "$15.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=PWA%20Tool:%20Local%20Service%20Directory&amount=15.00&currency_code=USD",
+      "file": "products/asset_1_20261105.html"
     },
     {
       "title": "Guam Resource: Task Automation Engine",
-      "price": "$29.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Task%20Automation%20Engine&amount=29.00&currency_code=USD",
-      "file": "products/asset_2_20261104.html"
+      "price": "$39.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=Guam%20Resource:%20Task%20Automation%20Engine&amount=39.00&currency_code=USD",
+      "file": "products/asset_2_20261105.html"
     },
     {
-      "title": "AI Workflow: SaaS Payment Interface",
-      "price": "$15.00",
-      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20SaaS%20Payment%20Interface&amount=15.00&currency_code=USD",
-      "file": "products/asset_3_20261104.html"
+      "title": "AI Workflow: Audio Binaural Generator",
+      "price": "$29.00",
+      "payment_url": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=crh2509@icloud.com&item_name=AI%20Workflow:%20Audio%20Binaural%20Generator&amount=29.00&currency_code=USD",
+      "file": "products/asset_3_20261105.html"
     }
   ]
 }
