@@ -4,9 +4,10 @@
 
 A practical system for creating, packaging, selling, and delivering digital products (templates, data packs, prompt packs, tools, and more).
 
-**Live:** https://ram133.github.io/digital_factory/
+**Live:** https://ram133.github.io/digital_factory/  
+**Free resources:** [start-here](https://github.com/ram133/start-here)
 
-Built with Grok.
+This is the same approach I use when helping clients launch and systematize digital products.
 
 ---
 
@@ -18,6 +19,20 @@ Most creators ship one product and stop. Digital Factory is designed for repeata
 - Simple delivery
 - Payment integration options (PayPal IPN and others)
 - Reusable templates and checklists
+
+---
+
+## Start Free
+
+- [product-kit](https://github.com/ram133/product-kit) — Ready-to-clone starter
+- [store](https://github.com/ram133/store) — Example digital products
+- [prompt-pack](https://github.com/ram133/prompt-pack) — Free high-signal prompts
+
+---
+
+## Want it built or customized live?
+
+→ [services](https://github.com/ram133/services) — $1 per minute
 
 ---
 
